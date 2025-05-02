@@ -172,8 +172,8 @@
           top + bevoSize/2 > avoidBox.top && top + bevoSize/2 < avoidBox.bottom
         ) { tries++; continue; }
 
-        // Avoid overlap with other Bevos
-        if (isOverlapping(left + bevoSize/2, top + bevoSize/2, placed, bevoSize * 0.85)) {
+        // Avoid overlap with other Bevos (increase minDist)
+        if (isOverlapping(left + bevoSize/2, top + bevoSize/2, placed, bevoSize * 1.05)) {
           tries++; continue;
         }
 
