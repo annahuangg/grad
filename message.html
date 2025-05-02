@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secret Message</title>
+</head>
+<body>
+  <div id="message" style="display:none;">
+    <h2>🎉 Here's your secret message!</h2>
+    <p>This is the hidden paragraph you wanted to show. You can edit this as needed.</p>
+  </div>
+
+  <script>
+    if (sessionStorage.getItem("authenticated") === "true") {
+      document.getElementById("message").style.display = "block";
+    } else {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
