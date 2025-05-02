@@ -19,26 +19,32 @@
 
     .floating-bevo {
       position: absolute;
-      width: 80px;
-      height: 80px;
-      background-image: url('bevo-bg-small.png');
+      width: 300px;
+      height: 300px;
+      background-image: url('bevo.png');
       background-size: contain;
       background-repeat: no-repeat;
-      opacity: 0.4;
-      animation: floatUp linear infinite;
+      opacity: 0.7;
+      pointer-events: none;
+      z-index: 1;
+      animation: gentleFloat 6s ease-in-out infinite alternate;
     }
 
-    @keyframes floatUp {
+    @keyframes gentleFloat {
       0% {
-        transform: translateY(100vh) rotate(0deg);
-        opacity: 0;
+        transform: translate(0px, 0px) scale(1) rotate(-2deg);
+      }
+      25% {
+        transform: translate(10px, -10px) scale(1.02) rotate(2deg);
       }
       50% {
-        opacity: 0.4;
+        transform: translate(-10px, 10px) scale(0.98) rotate(-2deg);
+      }
+      75% {
+        transform: translate(10px, 10px) scale(1.01) rotate(2deg);
       }
       100% {
-        transform: translateY(-10vh) rotate(360deg);
-        opacity: 0;
+        transform: translate(0px, 0px) scale(1) rotate(-2deg);
       }
     }
 
@@ -106,7 +112,7 @@
 
   <script>
     function checkPassword() {
-      const correctPassword = "open123";
+      const correctPassword = "twinklepanda";
       const enteredPassword = document.getElementById("password").value;
       if (enteredPassword === correctPassword) {
         sessionStorage.setItem("authenticated", "true");
@@ -116,15 +122,24 @@
       }
     }
 
-    // Add floating Bevos
-    for (let i = 0; i < 20; i++) {
+    // 6 Bevos, scattered, not in corners, not behind the login box, and not off the page
+    const bevoPositions = [
+      { left: '15%', top: '7%' },
+      { left: '70%', top: '12%' },
+      { left: '12%', top: '48%' },
+      { left: '75%', top: '45%' },
+      { left: '25%', top: '62%' },
+      { left: '65%', top: '60%' }
+    ];
+
+    bevoPositions.forEach(pos => {
       const bevo = document.createElement('div');
       bevo.classList.add('floating-bevo');
-      bevo.style.left = Math.random() * 100 + "vw";
-      bevo.style.animationDuration = (5 + Math.random() * 5) + "s";
-      bevo.style.animationDelay = Math.random() * 5 + "s";
+      bevo.style.left = pos.left;
+      bevo.style.top = pos.top;
+      bevo.style.animationDuration = (5 + Math.random() * 3) + "s";
       document.body.appendChild(bevo);
-    }
+    });
   </script>
 </body>
 </html>
