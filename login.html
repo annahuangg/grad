@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Enter Password</title>
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       margin: 0;
@@ -11,7 +12,7 @@
       font-family: 'Quicksand', sans-serif;
       background-color: #d6f0ff;
       overflow: hidden;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -19,8 +20,12 @@
 
     .floating-bevo {
       position: absolute;
-      width: 300px;
-      height: 300px;
+      width: 22vw;   /* Responsive size */
+      max-width: 180px;
+      min-width: 80px;
+      height: 22vw;
+      max-height: 180px;
+      min-height: 80px;
       background-image: url('bevo.png');
       background-size: contain;
       background-repeat: no-repeat;
@@ -28,6 +33,7 @@
       pointer-events: none;
       z-index: 1;
       animation: gentleFloat 6s ease-in-out infinite alternate;
+      transition: width 0.2s, height 0.2s;
     }
 
     @keyframes gentleFloat {
@@ -49,15 +55,17 @@
     }
 
     .login-container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 40px;
-      border-radius: 30px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      background: rgba(255, 255, 255, 0.85); /* Softer white */
+      padding: 32px 20px;                    /* Less padding */
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+      border: 1.5px solid #e0e7ef;           /* Subtle border */
       text-align: center;
-      max-width: 400px;
-      width: 100%;
-      transition: transform 0.3s ease;
+      max-width: 350px;                      /* Classic size */
+      width: 90%;
+      min-width: 200px;
       z-index: 10;
+      transition: width 0.2s;
     }
 
     .login-container:hover {
@@ -122,24 +130,67 @@
       }
     }
 
-    // 6 Bevos, scattered, not in corners, not behind the login box, and not off the page
-    const bevoPositions = [
-      { left: '15%', top: '7%' },
-      { left: '70%', top: '12%' },
-      { left: '12%', top: '48%' },
-      { left: '75%', top: '45%' },
-      { left: '25%', top: '62%' },
-      { left: '65%', top: '60%' }
-    ];
+    function isOverlapping(x, y, placed, minDist) {
+      for (const p of placed) {
+        const dx = p.x - x;
+        const dy = p.y - y;
+        if (Math.sqrt(dx*dx + dy*dy) < minDist) return true;
+      }
+      return false;
+    }
 
-    bevoPositions.forEach(pos => {
-      const bevo = document.createElement('div');
-      bevo.classList.add('floating-bevo');
-      bevo.style.left = pos.left;
-      bevo.style.top = pos.top;
-      bevo.style.animationDuration = (5 + Math.random() * 3) + "s";
-      document.body.appendChild(bevo);
-    });
+    function placeBevos() {
+      document.querySelectorAll('.floating-bevo').forEach(el => el.remove());
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const bevoSize = Math.max(Math.min(w, h) * 0.22, 80); // responsive, min 80px
+
+      // Avoid the center area (login box)
+      const boxW = Math.min(350, w * 0.9);
+      const boxH = 220;
+      const centerX = w / 2;
+      const centerY = h / 2;
+      const avoidBox = {
+        left: centerX - boxW / 2 - 40,
+        right: centerX + boxW / 2 + 40,
+        top: centerY - boxH / 2 - 40,
+        bottom: centerY + boxH / 2 + 40
+      };
+
+      const numBevos = Math.max(8, Math.floor((w * h) / (400 * 400))); // 8 minimum, more on big screens
+      const placed = [];
+      let tries = 0, count = 0;
+
+      while (count < numBevos && tries < numBevos * 20) {
+        let left = Math.random() * (w - bevoSize);
+        let top = Math.random() * (h - bevoSize);
+
+        // Avoid the center login box area
+        if (
+          left + bevoSize/2 > avoidBox.left && left + bevoSize/2 < avoidBox.right &&
+          top + bevoSize/2 > avoidBox.top && top + bevoSize/2 < avoidBox.bottom
+        ) { tries++; continue; }
+
+        // Avoid overlap with other Bevos
+        if (isOverlapping(left + bevoSize/2, top + bevoSize/2, placed, bevoSize * 0.85)) {
+          tries++; continue;
+        }
+
+        const bevo = document.createElement('div');
+        bevo.classList.add('floating-bevo');
+        bevo.style.width = bevo.style.height = bevoSize + 'px';
+        bevo.style.left = left + 'px';
+        bevo.style.top = top + 'px';
+        bevo.style.animationDuration = (5 + Math.random() * 3) + "s";
+        document.body.appendChild(bevo);
+        placed.push({x: left + bevoSize/2, y: top + bevoSize/2});
+        count++;
+      }
+    }
+
+    placeBevos();
+    window.addEventListener('resize', placeBevos);
   </script>
 </body>
 </html>
